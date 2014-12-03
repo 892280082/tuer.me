@@ -10,7 +10,7 @@ var tuerBase = require('../model/base'),
 var index = function(req,res,next){
     var proxy = new EventProxy(),
         //render = function(feeds,usersCount,privacyCount,diariesCount,diaries,todoCount,hotusers,hotdiarys){
-        render = function(feeds,usersCount,privacyCount,diariesCount,diaries,todoCount,hotusers){
+        render = function(feeds,usersCount,privacyCount,diariesCount,diaries,todoCount,hotusers,noteCount){
 
             req.session.title = "首页 - 总有一些不经意的时光，需要被镌刻";
             req.session.template = "index";
@@ -42,9 +42,11 @@ var index = function(req,res,next){
                 config:config,
                 session:req.session,
                 feeds:feeds,
+                noteCount:noteCount,
                 diaries:diaries,
                 //hotdiarys:hotdiarys,
                 hotusers:hotusers,
+                countDownTime:config.countDownTime(),
                 pag:new pag({
                     cur:1,
                     space:25,
@@ -59,7 +61,7 @@ var index = function(req,res,next){
         };
 
     //proxy.assign('feeds','usersCount','privacyCount','diariesCount','diaries','todoCount','hotusers','hotdiarys',render);
-    proxy.assign('feeds','usersCount','privacyCount','diariesCount','diaries','todoCount','hotusers',render);
+    proxy.assign('feeds','usersCount','privacyCount','diariesCount','diaries','todoCount','hotusers','noteCount',render);
 
   tuerBase.findDiarySlice(0, 25, function(err, lists) {
     if (err) {
@@ -115,6 +117,14 @@ var index = function(req,res,next){
         }else{
             proxy.trigger('hotusers',users);
         }
+    });
+    
+    tuerBase.getCount({},'notebooks',function(err,noteCount){
+       if(err){
+        res.redirect('500');    
+       }else{
+        proxy.trigger('noteCount',noteCount);    
+       }
     });
     /*
     tuerBase.getHotDiary(10,function(err,diarys){
