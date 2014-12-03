@@ -7,9 +7,9 @@ EventProxy = require('eventproxy').EventProxy;
 
 var index = function(req, res) {
   if (req.session.is_login) {
-    res.redirect('home');
+    res.redirect('http://www.tuer.me');
   } else {
-        var next_url = req.query.next ? req.query.next : 'home';
+        var next_url = req.query.next ? req.query.next : 'http://www.tuer.me';
         var type = req.query.type ? req.query.type : 'pc';
         var template;
 
@@ -44,10 +44,10 @@ var logout = function(req, res) {
                 path:'/',
         domain: config.cookiepath
       });
-      res.redirect('home');
+    res.redirect('http://www.tuer.me');
     });
   } else {
-    res.redirect('home');
+    res.redirect('http://www.tuer.me');
   }
 };
 
@@ -124,13 +124,13 @@ var cookies = function(req, res, next) {
 
 var signin = function(req, res) {
   if (req.session.is_login) {
-    res.redirect('home');
+    res.redirect('http://www.tuer.me');
   } else {
     var proxy = new EventProxy(),
     accounts = req.body.email.trim(),
     pwd = req.body.pwd.trim(),
     remember = req.body.remember,
-        next_url = req.body.next_url || 'home',
+        next_url = req.body.next_url || 'http://www.tuer.me',
     render = function(data) {
       var errorMap = {
         '001': '帐号不存在',
