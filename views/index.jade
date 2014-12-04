@@ -7,7 +7,7 @@ block content
             if(!session.is_login)
               div(class='well row')
                 h4 总有一些不经意的时光，需要被镌刻.
-                h5 此时已有#{usersCount}位朋友写下了#{diariesCount}件小事，#{privacyCount}个秘密，#{todoCount}条心愿
+                h5 此时已有#{usersCount}位朋友创建了#{noteCount}本日记, 写下了#{diariesCount}件小事，#{privacyCount}个秘密，#{todoCount}条心愿
             div(class='row')
               h4 最新日记
               hr 
@@ -48,15 +48,21 @@ block content
             if(session.is_login)
               h4 欢迎回来,#{session.userdata.nick}!
               hr
+            else
+              div(class='well')
+                include package/smallLogin
+            if(session.is_login)
               div(id='J_UserBar')
                 div(class='btn-group hot',id='J_UserBar')
                   a(class="btn btn-primary",href='/diary/write',title='写日记') 写日记
                   a(class="btn",href='/notebook',title='管理日记本') 管理日记本
                   a(class="btn",href='/todo',title='管理Todo') 管理TODO
               hr
-            else
-              div(class='well')
-                include package/smallLogin
+            div(class='hot')
+              span(style='font-size:18px;text-align:center;display:block;padding:10px;line-height:30px;background:#f9f9f9;color:#669;') #{countDownTime}
+                br
+                span(style='font-size:12px;') (GMT+8 GreenWich Mean Time)
+            hr
             //
               div(class='hot')
                 h4 公告 

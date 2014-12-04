@@ -7,11 +7,13 @@ EventProxy = require('eventproxy').EventProxy;
 
 var index = function(req, res) {
   if (req.session.is_login) {
-    res.redirect('home');
+    res.redirect('http://www.tuer.me');
   } else {
-        var next_url = req.query.next ? req.query.next : 'home';
-        var type = req.query.type ? req.query.type : 'pc';
-        var template;
+    var next_url = req.query.next ? req.query.next : 'http://www.tuer.me';
+    var type = req.query.type ? req.query.type : 'pc';
+    var template;
+
+    console.log(req.query,req.url);
 
     req.session.title = '登陆兔耳';
     req.session.template = 'login';
@@ -30,7 +32,6 @@ var index = function(req, res) {
 };
 
 var logout = function(req, res) {
-  if (req.session.is_login) {
     req.session.destroy(function(err) {
       res.clearCookie('accounts', {
                 path:'/',
@@ -44,11 +45,8 @@ var logout = function(req, res) {
                 path:'/',
         domain: config.cookiepath
       });
-      res.redirect('home');
+      res.redirect('http://www.tuer.me');
     });
-  } else {
-    res.redirect('home');
-  }
 };
 
 var signsuccess = function(req, res, userdata, accounts, pwd, remember, callback) {
@@ -68,7 +66,7 @@ var signsuccess = function(req, res, userdata, accounts, pwd, remember, callback
   }
   res.cookie('accounts', cookie_accounts, {
     maxAge: maxAge,
-        path:'/',
+    path:'/',
     domain: config.cookiepath
   });
   res.cookie('pwd', cookie_pwd, {
@@ -109,8 +107,8 @@ var cookies = function(req, res, next) {
                         next();
           });
         } else {
-                    req.session.is_login = false;
-                    req.session.userdata = undefined;
+          req.session.is_login = false;
+          req.session.userdata = undefined;
           next();
         }
       }
@@ -123,14 +121,11 @@ var cookies = function(req, res, next) {
 };
 
 var signin = function(req, res) {
-  if (req.session.is_login) {
-    res.redirect('home');
-  } else {
     var proxy = new EventProxy(),
     accounts = req.body.email.trim(),
     pwd = req.body.pwd.trim(),
     remember = req.body.remember,
-        next_url = req.body.next_url || 'home',
+        next_url = req.body.next_url || 'http://www.tuer.me',
     render = function(data) {
       var errorMap = {
         '001': '帐号不存在',
@@ -169,7 +164,6 @@ var signin = function(req, res) {
     } else {
       proxy.trigger('findLoginuser', '001');
     }
-  }
 };
 
 exports.index = index;

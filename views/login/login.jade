@@ -1,28 +1,110 @@
-extends ../common/layout
-block content
-  div(class='container')
-    form(class='form-horizontal',method='post',action='/login')
-      input(type='hidden',value="#{next_url}",name="next_url")
-      legend 登录本站
-      if(session.error.length)
-        div(class='alert alert-error') #{session.error}
-          a(class='close',data-dismiss='alert') &times;
-      div(class='control-group validation-container')
-        label(class='control-label',for='J_email') 邮箱
-        div(class='controls')
-          input(id='J_email',type='text',class='input-xlarge',placeholder='Email',name='email')
-      div(class='control-group validation-container')
-        label(class='control-label',for='J_pwd') 密码
-        div(class='controls')
-          input(id='J_pwd',type='password',class='input-xlarge',placeholder='Password',name='pwd')
-      div(class='control-group')
-        div(class='controls')
-          p
-            a(href='/forgot/') 忘记密码 &nbsp;
-            a(href='/register/') 注册 
-          label(class='checkbox') 记住我
-            input(type='checkbox',name='remember')
-          button(type='submit',class='btn btn-primary') 登入
-    include ../common/footer
-  script
-    lithe.use('mods/login.min.js');
+!!! 5
+html
+  head
+    title
+      兔耳日记 | #{session.title} 
+    meta(content='text/html;charset=utf-8',http-equiv='Content-Type')
+    meta(name="description",content="兔耳日记，记录精彩每一天")
+    meta(name="author",content="小爝")
+    link(rel='shortcut icon',href='https://login.tuer.me/favicon.ico',type='image/x-icon')
+    link(rel='icon',href='https://login.tuer.me/favicon.ico',type='image/x-icon')
+    if(session.template == 'Invite')
+      meta(http-equiv="pragma",content="no-cache")
+      meta(http-equiv="cache-control",content="no-cache,must-revalidate,private,no-store")
+      meta(http-equiv="expires",content="Sun, 6 Mar 2005 01:00:00 GMT")
+      meta(http-equiv="expires",content="0")
+    link(rel='stylesheet', href='https://login.tuer.me/bootstrap/css/bootstrap.min.css')
+    link(rel='stylesheet', href='https://login.tuer.me/bootstrap/css/todc-bootstrap.min.css')
+    link(rel='stylesheet', href='https://login.tuer.me/style/css/common.min.css?v=201304021030')
+    if(session.template == 'profile' || session.template == 'myprofile')
+    script(src='https://login.tuer.me/jquery/jquery-1.7.2.min.js')
+    script(src='https://login.tuer.me/bootstrap/js/bootstrap.min.js')
+    script(data-path="https://login.tuer.me/libs/",src='https://login.tuer.me/lithe/lithe-min.js')
+    script.
+      lithe.use('mods/common.min.js?v=20121022');
+  body(data-spy="scroll",data-target=".bs-docs-sidebar")
+    div(class='navbar navbar-fixed-top')
+      div(class='navbar-inner')
+        div(class='container')
+           a(class='btn btn-navbar', data-target='.nav-collapse', data-toggle='collapse')
+             span(class='icon-bar')
+             span(class='icon-bar')
+             span(class='icon-bar')
+           a(class='brand', href='http://www.tuer.me/') 兔耳日记
+           div(class='nav-collapse')
+             ul(class='nav nav-pills')
+               - var muens;
+               - if(session.is_login){
+                 - muens = [{text:'首页',href:'https://www.tuer.me/',template:'index'},{text:'全部日记',href:'https://www.tuer.me/diaries',template:'diaries'},{text:'我的主页',href:'https://www.tuer.me/user/profile/'+session.userdata._id,template:'myprofile'}];
+               - }else{
+                 - muens = [{text:'首页',href:'https://www.tuer.me/',template:'index'},{text:'全部日记',href:'https://www.tuer.me/diaries/',template:'diaries'}];
+               - }
+               for muen in muens
+                 - var cls='';
+                 - if(session.template == muen.template)
+                   - cls='active'
+                 li(class='#{cls}')
+                   a(href='#{muen.href}',title='#{muen.text}') #{muen.text} 
+               if(session.is_login)
+                 li(class='dropdown')
+                   a(class='dropdown-toggle',data-toggle='dropdown',href='#') 更多
+                     b(class='caret')
+                   ul(class='dropdown-menu')
+                     - var more = [{text:'我的TODOS',href:'https://www.tuer.me/todo/'+session.userdata._id,template:'mytodo'},{text:'关注的日记',href:'https://www.tuer.me/followed/diaries/',template:'followedDiaries'}];
+                     for muen in more
+                       li
+                         a(href='#{muen.href}',title='#{muen.text}') #{muen.text}
+           form(class='navbar-search pull-left',action='https://www.tuer.me/search/',method='get')
+             input(class='search-query span2',type='text',placeholder='Search',name='q')
+           ul(class='nav pull-right')
+             - var operate = config.nav
+             - if(session.is_login)
+               - operate = config.loginnav
+             each item in operate
+              li
+                a(href='#{item.href}') #{item.text}
+    div(class='container')
+      form(class='form-horizontal',method='post',action='https://login.tuer.me/login')
+        input(type='hidden',value="#{next_url}",name="next_url")
+        legend 登录本站
+        if(session.error.length)
+          div(class='alert alert-error') #{session.error}
+            a(class='close',data-dismiss='alert') &times;
+        div(class='control-group validation-container')
+          label(class='control-label',for='J_email') 邮箱
+          div(class='controls')
+            input(id='J_email',type='text',class='input-xlarge',placeholder='Email',name='email')
+        div(class='control-group validation-container')
+          label(class='control-label',for='J_pwd') 密码
+          div(class='controls')
+            input(id='J_pwd',type='password',class='input-xlarge',placeholder='Password',name='pwd')
+        div(class='control-group')
+          div(class='controls')
+            p
+              a(href='https://www.tuer.me/forgot/') 忘记密码 &nbsp;
+              a(href='https://www.tuer.me/register/') 注册 
+            label(class='checkbox') 记住我
+              input(type='checkbox',name='remember')
+            button(type='submit',class='btn btn-primary') 登入
+      hr
+      footer
+        p 网站基于Nodejs开发 版权所有 &copy; 2012-2014 Tuer.me 
+         a(href='https://github.com/xiaojue/tuer.me',target='_blank') 源码 
+       p
+         each item,i in config.footer
+           a(href='#{item.href}') #{item.text} 
+         script.
+          var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+          document.write(unescape("%3Cspan id='cnzz_stat_icon_5598883'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s96.cnzz.com/stat.php%3Fid%3D5598883%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));
+      script.
+         var _gaq = _gaq || [];
+         _gaq.push(['_setAccount', 'UA-33569930-1']);
+         _gaq.push(['_setDomainName', 'tuer.me']);
+         _gaq.push(['_trackPageview']);
+         (function() {
+           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+    script
+      lithe.use('mods/login.min.js');
