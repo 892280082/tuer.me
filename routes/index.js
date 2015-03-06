@@ -8,6 +8,10 @@ var tuerBase = require('../model/base'),
     EventProxy = require('eventproxy').EventProxy;
 
 var index = function(req,res,next){
+    var version = req.query.version;
+    var newversion = version === 'new';
+    var view = newversion ? 'newindex' : 'index';
+    var islogin = !!req.session.is_login;
     var proxy = new EventProxy(),
         //render = function(feeds,usersCount,privacyCount,diariesCount,diaries,todoCount,hotusers,hotdiarys){
         render = function(feeds,usersCount,privacyCount,diariesCount,diaries,todoCount,hotusers,noteCount){
@@ -31,14 +35,54 @@ var index = function(req,res,next){
             });
 
             hotusers.forEach(function(item){
-                item.avatarUrl = Avatar.getUrl(item.avatar);
+                item.avatarUrl = newversion ? Avatar.getArtUrl(item.avatar) : Avatar.getUrl(item.avatar) ;
             });
             /*
             hotdiarys.forEach(function(item){
                 item.content = item.content.length > 10 ? item.content.slice(0,10)+'...' : item.content;
             });
             */
-            res.render('index',{
+            if(islogin){
+                var firends = [];
+                for(var i=0;i<req.session.userdata.firends.length;i++){
+                   firends.push(req.session.userdata.firends[i].toString()); 
+                    }
+      tuerBase.getCount({
+        privacy: 0,
+        userid: {
+          '$in':firends
+        }
+      },
+      'diary', function(err, count) {
+        if (err) {
+          res.redirect('500');
+        } else {
+            console.log(count);
+            res.render(view,{
+                config:config,
+                session:req.session,
+                feeds:feeds,
+                noteCount:noteCount,
+                diaries:diaries,
+                //hotdiarys:hotdiarys,
+                hotusers:hotusers,
+                countDownTime:config.countDownTime(),
+                pag:new pag({
+                    cur:1,
+                    space:25,
+                    total:count,
+                    url:'/followed/diaries'
+                }).init(),
+                usersCount:usersCount,
+                privacyCount:privacyCount,
+                diariesCount:diariesCount,
+                todoCount:todoCount
+            });
+        }
+  });
+            }else{
+                
+            res.render(view,{
                 config:config,
                 session:req.session,
                 feeds:feeds,
@@ -58,10 +102,29 @@ var index = function(req,res,next){
                 diariesCount:diariesCount,
                 todoCount:todoCount
             });
+                }
         };
 
     //proxy.assign('feeds','usersCount','privacyCount','diariesCount','diaries','todoCount','hotusers','hotdiarys',render);
     proxy.assign('feeds','usersCount','privacyCount','diariesCount','diaries','todoCount','hotusers','noteCount',render);
+
+  if(islogin){
+
+  tuerBase.findById(req.session.userdata._id.toString(), 'users', function(err, user) {
+    if (err) {
+      res.redirect('500');
+    } else {
+      user.firends.push(req.session.userdata._id.toString());
+      tuerBase.findDiaryByUsers(user.firends, false, 0, 25, function(err, lists) {
+        if (err) {
+          res.redirect('500');
+        } else {
+          proxy.trigger('diaries', lists);
+        }
+      });
+    }
+  });
+  }else{
 
   tuerBase.findDiarySlice(0, 25, function(err, lists) {
     if (err) {
@@ -70,7 +133,7 @@ var index = function(req,res,next){
       proxy.trigger('diaries', lists);
     }
   });
-
+    }
     tuerBase.findFeeds({},0,10,function(err,feeds){
         if(err){
             res.redirect('500');
@@ -110,8 +173,8 @@ var index = function(req,res,next){
             proxy.trigger('todoCount',todoCount);
         }
     });
-
-    tuerBase.getHotUser(15,function(err,users){
+    var hotUsers = newversion ? 165 : 15;
+    tuerBase.getHotUser(hotUsers,function(err,users){
         if(err){
             res.redirect('500');
         }else{

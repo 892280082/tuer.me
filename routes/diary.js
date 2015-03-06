@@ -225,7 +225,7 @@ var followedDiaries = function(req, res) {
           proxy.trigger('Diaries', lists);
         }
       });
-
+console.log(user.firends);
       tuerBase.getCount({
         privacy: 0,
         userid: {
@@ -236,6 +236,7 @@ var followedDiaries = function(req, res) {
         if (err) {
           res.redirect('500');
         } else {
+            console.log(count);
           proxy.trigger('DiarysCount', count);
         }
       });

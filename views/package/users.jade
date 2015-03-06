@@ -1,0 +1,50 @@
+//div(class='row Friends-list') 
+//  ul
+//      each item,i in hotusers
+//          li(style="margin:0px;width:48px;height:48px;") 
+//              //a(href='/user/profile/#{item.id}')
+//              //    img(src='#{item.avatarUrl}',alt='#{item.nick}')
+//              span 
+//                small #{item.nick}
+script(src="jquery-photowall/jquery-photowall/jquery-photowall.js")
+link(ref="stylesheet",type="text/css",href="jquery-photowall/jquery-photowall/juqery-photowall.css")
+style
+  .popover{width:auto;}
+  .popover .popover-title{padding:5px;font-size:12px;background:#fff;color:#000;}
+  .popover .popover-content{padding:5px;}
+div(class="row",id="gallery",style="width:990px")
+  div(class="body")
+each item,i in hotusers
+  input(class="J_imgs",type="hidden",value="#{item.avatarUrl},#{item.id},#{item.profile},#{item.nick}")
+script.
+    $(function(){
+      PhotoWall.init({
+          el:             '#gallery'               // Gallery element
+          ,padding:       0                       // padding between images in gallery
+          ,lineMaxHeight:30
+      });
+      var PhotosArray = [];
+      $('.J_imgs').each(function(index){
+        var data =$(this).val().split(',');
+        var src = data[0].replace('big','small');
+        var img = 'user/profile/'+data[1];
+        var profile = data[2];
+        var nick = data[3];
+        PhotosArray.push({
+          nick:nick,
+          title:profile,
+          id:index,
+          width:48,
+          height:48,
+          src:src,
+          img:img,
+          th:{
+            width:50,
+            height:50,
+            src:src
+          }
+        });
+      });
+      PhotoWall.load(PhotosArray); 
+      $('[data-toggle="tooltip"]').popover({trigger:'hover'})
+    });
