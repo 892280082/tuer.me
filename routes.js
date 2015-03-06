@@ -23,6 +23,8 @@ guest = require('./routes/guest'),
 music = require('./routes/music'),
 admin = require('./routes/admin'),
 oap = require('./routes/oap'),
+say = require('./routes/say'),
+sync = require('./routes/sync'),
 search = require('./routes/search');
 
 module.exports = function(app) {
@@ -155,11 +157,16 @@ module.exports = function(app) {
 	app.get('/admin/appkey/:page?', admin.appkey);
 	app.get('/admin/tip', admin.tip);
 
+
+	app.post('/images/upload', images.upload);
+    app.post('/say/save',say.save);
+	app.get('/sync/index', sync.index);
+	app.get('/sync/qrcode', sync.qrcode);
+	app.post('/sync/upload', sync.upload);
+
 	app.get('/404', error.notFound);
 	app.get('/500', error.proError);
 	app.get('*', error.notFound);
-
-	app.post('/images/upload', images.upload);
 
 };
 
