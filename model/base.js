@@ -538,13 +538,14 @@ tuerBase.prototype.findFeeds = function(source, start, end, callback) {
         }
       }
       var proxy = new EventProxy(),
-      finish = function(todos, diarys, notebooks, registers) {
+      finish = function(todos, diarys, notebooks, registers,says) {
         var feeds = [];
         addType(todos, 'todo');
         addType(diarys, 'diary');
         addType(notebooks, 'notebook');
         addType(registers, 'register');
-        feeds = feeds.concat(todos, diarys, notebooks, registers).sort(function(a, b) {
+        addType(says, 'say');
+        feeds = feeds.concat(todos, diarys, notebooks, registers,says).sort(function(a, b) {
           return b.created_at - a.created_at;
         });
         feeds.forEach(function(item) {
@@ -552,10 +553,11 @@ tuerBase.prototype.findFeeds = function(source, start, end, callback) {
         });
         callback(null, feeds);
       };
-      proxy.assign('todos', 'diarys', 'notebooks', 'registers', finish);
+      proxy.assign('todos', 'diarys', 'notebooks', 'registers','says', finish);
       var todos = [],
       diarys = [],
       notebooks = [],
+      says = [],
       registers = [];
       for (var i = 0; i < data.length; i++) {
         var type = data[i]['type'],
@@ -564,6 +566,7 @@ tuerBase.prototype.findFeeds = function(source, start, end, callback) {
         if (type == 'diary') diarys.push(id);
         if (type == 'notebook') notebooks.push(id);
         if (type == 'register') registers.push(id);
+        if (type == 'say') says.push(id);
       }
 
       if (todos.length) {
@@ -647,6 +650,27 @@ tuerBase.prototype.findFeeds = function(source, start, end, callback) {
         });
       } else {
         proxy.trigger('registers', registers);
+      }
+      if(says.length){
+        self.findBySortSlice({
+          _id: {
+            $in: says
+          }
+        },
+        {
+          created_at: - 1
+        },
+        'say', 0, says.length, function(err, list) {
+          if (err) callback(err);
+          else {
+            self.batchAddUser(list,'userid',function(err,list){
+               if(err) callback(err); 
+               else proxy.trigger('says', list);
+            });
+          }
+        });
+      }else{
+        proxy.trigger('says', says);
       }
     }
   });
