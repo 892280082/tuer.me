@@ -77,6 +77,17 @@ if(feeds.length)
                a(href='/user/profile/#{item.id}',title='#{item.nick}') #{item.nick} 
                加入了兔耳日记!
             div(class='bar') #{item.created_at} 
+       - if(item.feed_type == 'say')
+          div(class='Diary-row')
+            div(class='Diary-left')
+             a(href='/user/profile/#{item.pageurl}',title='#{item.created_user}')
+               img(src='#{item.avatarUrl}',class="img-rounded",alt='#{item.created_user}')
+            div(class='Diary-right')
+             div(class='Diary-content')
+              p 
+                a(href='/user/profile/#{item.pageurl}',title='#{item.created_user}') #{item.created_user} 
+                说: #{item.content}
+             div(class='bar') #{item.created_at} 
         
   !{pag}
 else

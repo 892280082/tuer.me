@@ -10,9 +10,9 @@ div(class='navbar navbar-fixed-top')
          ul(class='nav nav-pills')
            - var muens;
            - if(session.is_login){
-             - muens = [{text:'首页',href:'/',template:'index'},{text:'全部日记',href:'/diaries',template:'diaries'},{text:'我的主页',href:'/user/profile/'+session.userdata._id,template:'myprofile'}];
+             - muens = [{text:'首页',href:'/',template:'index'},{text:'发现',href:'/diaries',template:'diaries'},{text:'我的主页',href:'/user/profile/'+session.userdata._id,template:'myprofile'}];
            - }else{
-             - muens = [{text:'首页',href:'/',template:'index'},{text:'全部日记',href:'/diaries/',template:'diaries'}];
+             - muens = [{text:'首页',href:'/',template:'index'},{text:'发现',href:'/diaries/',template:'diaries'}];
            - }
            for muen in muens
              - var cls='';
@@ -29,8 +29,9 @@ div(class='navbar navbar-fixed-top')
                  for muen in more
                    li
                      a(href='#{muen.href}',title='#{muen.text}') #{muen.text}
-       form(class='navbar-search pull-left',action='/search/',method='get')
-         input(class='search-query span2',type='text',placeholder='Search',name='q')
+       //
+        form(class='navbar-search pull-left',action='/search/',method='get')
+          input(class='search-query span2',type='text',placeholder='Search',name='q')
        ul(class='nav pull-right')
          - var operate = config.nav
          - if(session.is_login)

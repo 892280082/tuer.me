@@ -3,9 +3,7 @@ footer
   p 网站基于Nodejs开发 版权所有 &copy; 2012-2014 Tuer.me 
    a(href='https://github.com/xiaojue/tuer.me',target='_blank') 源码 
    span | 友情连接 
-   a(href='http://www.luoo.net/',target='_blank') 落网 
    a(href='http://www.duole.com/',target='_blank') 多乐电台 
-   a(href='http://f2e.html-js.com/',target='_blank') 前端乱炖 
  p
    each item,i in config.footer
      a(href='#{item.href}') #{item.text} 
@@ -22,3 +20,14 @@ script.
      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
    })();
+script
+  $('.Diary-content').each(function(){
+    var text = $(this).text();
+    var img = $(this).find('img');
+    if(img.length === 0 && text == '') $(this).html('<p>暂无内容...</p>');
+  });
+  $('img').on('error',function(){
+    var err = 'http://img.tuer.me/error.jpg'
+    $(this).attr('src',err); 
+    $(this).closest('.fancybox').attr('href',err); 
+  });

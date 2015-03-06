@@ -1,5 +1,9 @@
 extends common/layout
 block content
+  style
+    .Diary-content img{
+      width:150px; 
+     }
   div(class="container")
     div(class='div-fluid show-grid')
       div(class='row')
@@ -9,7 +13,10 @@ block content
                 h4 总有一些不经意的时光，需要被镌刻.
                 h5 此时已有#{usersCount}位朋友创建了#{noteCount}本日记, 写下了#{diariesCount}件小事，#{privacyCount}个秘密，#{todoCount}条心愿
             div(class='row')
-              h4 最新日记
+              if(!session.is_login)
+                h4 最新日记
+              else
+                h4 #{session.userdata.nick}的动态
               hr 
               if(diaries.length)
                 div(class='Diary-wrap')
@@ -43,7 +50,7 @@ block content
                          small #{item.commentcount}回复 
                  !{pag}
               else
-                p There is nothing yet.
+                p 您可以先关注一些用户，你自己的日记和他们的日记都会出现在你的时间线上。
           div(class='span4') 
             if(session.is_login)
               h4 欢迎回来,#{session.userdata.nick}!
@@ -59,7 +66,7 @@ block content
                   a(class="btn",href='/todo',title='管理Todo') 管理TODO
               hr
             div(class='hot')
-              span(style='font-size:18px;text-align:center;display:block;padding:10px;line-height:30px;background:#f9f9f9;color:#669;') #{countDownTime}
+              span(style='font-size:18px;text-align:center;display:block;padding:10px;line-height:30px;background:#f9f9f9;color:#317eac;') #{countDownTime}
                 br
                 span(style='font-size:12px;') (GMT+8 GreenWich Mean Time)
             hr
@@ -100,11 +107,12 @@ block content
   if(session.is_login)
     script.
       lithe.use('mods/index.min.js?t=20130320');
-  //
-    script(src="/jquery-advanced-news-ticker/jquery.newsTicker.min.js")
-    script.
-      $('.newsticker').show();
-      $('.newsticker').newsTicker({
-          max_rows:1,
-          duration:5000
-      });
+  script.
+    $('.Diary-content img').each(function(){
+        var bigimg = $(this).attr('src').replace(/\?.*$/,'') + '?w=-&h=-';
+        $(this).wrap('<a class="fancybox" rel="group" href="'+bigimg+'">');
+     });
+     $('a.fancybox').fancybox({
+        fitToView:false  
+     });
+    

@@ -44,7 +44,7 @@ block content
              div(class='Diary-content') 
                if(diary.img)
                   p 
-                    a(title='点击展示大图',href='#myPic',target='_blank',data-toggle="modal") 
+                    a(title='点击展示大图',href='#myPic',target='_blank') 
                       img(class="img-rounded",src='#{diary.img}')
                !{diary.content}
              if(diary.forbid == 1)
@@ -142,4 +142,9 @@ block content
           $(this).closest('p').after(this);  
           $(this).wrap('<p>');
         }
+        var bigimg = $(this).attr('src').replace(/\?.*$/,'') + '?w=-&h=-';
+        $(this).wrap('<a class="fancybox" rel="group" href="'+bigimg+'">');
+     });
+     $('a.fancybox').fancybox({
+        fitToView:false  
      });

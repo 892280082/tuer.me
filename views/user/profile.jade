@@ -99,3 +99,11 @@ block content
           else
              p 额，还没有任何人关注他
     include ../common/footer
+    script.
+      $('.Diary-content img').each(function(){
+          var bigimg = $(this).attr('src').replace(/\?.*$/,'') + '?w=-&h=-';
+          $(this).wrap('<a class="fancybox" rel="group" href="'+bigimg+'">');
+       });
+       $('a.fancybox').fancybox({
+          fitToView:false  
+       });

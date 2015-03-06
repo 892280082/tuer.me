@@ -4,7 +4,7 @@ html
     title
       兔耳日记 | #{session.title} 
     meta(content='text/html;charset=utf-8',http-equiv='Content-Type')
-    meta(name="description",content="兔耳日记，记录精彩每一天")
+    meta(name="description",content="兔耳日记，记录精彩每一天,小清新,日记网站,小众网站,轻博客,日记本")
     meta(name="author",content="小爝")
     link(rel='shortcut icon',href='http://#{config.csshost}/favicon.ico',type='image/x-icon')
     link(rel='icon',href='http://#{config.csshost}/favicon.ico',type='image/x-icon')
@@ -13,10 +13,10 @@ html
       meta(http-equiv="cache-control",content="no-cache,must-revalidate,private,no-store")
       meta(http-equiv="expires",content="Sun, 6 Mar 2005 01:00:00 GMT")
       meta(http-equiv="expires",content="0")
-    link(rel='stylesheet', href='http://#{config.csshost}/??bootstrap/css/bootstrap.min.css,bootstrap/css/todc-bootstrap.min.css,style/css/common.min.css?v=201304021030')
+    link(rel='stylesheet', href='http://#{config.csshost}/??bootstrap/css/bootstrap.min.css,bootstrap/css/todc-bootstrap.min.css,style/css/common.min.css,fancybox/jquery.fancybox.css?v=201304021030')
     if(session.template == 'profile' || session.template == 'myprofile')
       link(rel="alternate",type="application/rss+xml",href="http://#{config.host}/user/rss/#{rss.address}",title="#{rss.title}")
-    script(data-path="http://js.tuer.me/libs/",src='http://#{config.jshost}/??lithe/lithe-min.js,jquery/jquery-1.7.2.min.js,bootstrap/js/bootstrap.min.js')
+    script(data-path="http://js.tuer.me/libs/",src='http://#{config.jshost}/??lithe/lithe-min.js,jquery/jquery-1.7.2.min.js,bootstrap/js/bootstrap.min.js,fancybox/jquery.fancybox.js')
     script.
       lithe.use('mods/common.min.js?v=20121022');
   body(data-spy="scroll",data-target=".bs-docs-sidebar")

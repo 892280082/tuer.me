@@ -1,0 +1,83 @@
+extends common/layout
+block content
+  div(class="container")
+    div(class='div-fluid show-grid')
+      div(class='row')
+          // div(class='span8') 
+          //   if(session.is_login)
+          //     h4 欢迎回来,#{session.userdata.nick}!
+          //     hr
+          //   else
+          //     include package/newlogin
+          //   if(session.is_login)
+          //     div(id='J_UserBar')
+          //       div(class='btn-group hot',id='J_UserBar')
+          //         a(class="btn btn-primary",href='/diary/write',title='写日记') 写日记
+          //         a(class="btn",href='/notebook',title='管理日记本') 管理日记本
+          //         a(class="btn",href='/todo',title='管理Todo') 管理TODO
+          //     hr
+          //   //
+          //     div(class='hot')
+          //       span(style='font-size:18px;text-align:center;display:block;padding:10px;line-height:30px;background:#f9f9f9;color:#317eac;') #{countDownTime}
+          //         br
+          //         span(style='font-size:12px;') (GMT+8 GreenWich Mean Time)
+          //     hr
+          //     script(type="text/javascript")
+          //       google_ad_client = "ca-pub-7564906659770902";
+          //       google_ad_slot = "9462119232";
+          //       google_ad_width = 300;
+          //       google_ad_height = 250;
+          //     script(type="text/javascript",src="http://pagead2.googlesyndication.com/pagead/show_ads.js")
+          form(action="/say/save",method="post")
+            textarea(name="content")
+            input(type="submit",value="发布")
+          div(class='span12')
+            if(!session.is_login)
+            //
+              div(class='row')
+                h4 总有一些不经意的时光，需要被镌刻.
+                h5 此时已有#{usersCount}位朋友创建了#{noteCount}本日记, 写下了#{diariesCount}件小事，#{privacyCount}个秘密，#{todoCount}条心愿
+            //
+              h4 最新日记
+              hr 
+              if(diaries.length)
+                div(class='Diary-wrap')
+                  each item,i in diaries 
+                    div(class='Diary-row')
+                      div(class='Diary-left')
+                       a(href='/user/profile/#{item.pageurl}',title='#{item.created_user}')
+                         img(src='#{item.avatarUrl}',class="img-rounded",alt='#{item.created_user}')
+                      div(class='Diary-right')
+                       h5 
+                         a(href="/diary/#{item.id}") #{item.created_user}的日记
+                         if(item.title)
+                           a(href="/diary/#{item.id}") 
+                             small [#{item.title}]
+                           a(href="/user/#{item.pageurl}/notebook/#{item.bookid}") 
+                             small [#{item.bookname}] 
+                         else
+                           a(href="/user/#{item.pageurl}/notebook/#{item.bookid}") 
+                             small [#{item.bookname}] 
+                         if(item.weather)
+                           small [天气:#{item.weather}] 
+                         if(item.mood)
+                           small [心情:#{item.mood}] 
+                         if(item.location)
+                           small [地点:#{item.location}] 
+                       div(class='Diary-content')
+                          if(item.img)
+                           img(class="img-rounded",src='#{item.img}')
+                          p !{item.content}
+                       div(class='bar') #{item.created_at} 
+                         small #{item.commentcount}回复 
+                 !{pag}
+              else
+                p There is nothing yet.
+    div(class="row")
+      div(class='span12')
+        div(class='row')
+          include package/users.jade
+    include common/footer
+  if(session.is_login)
+    script.
+      lithe.use('mods/index.min.js?t=20130320');

@@ -1,40 +1,3 @@
-div(class='hot') 
- h4 最新动态
- hr
- if(feeds.length)
-   ul(class="newsticker")
-     each item,i in feeds 
-       - if(item.feed_type == 'diary')
-           - if(item.privacy == 1)
-             li
-               a(href='/user/profile/#{item.pageurl}',title="#{item.created_user}") #{item.created_user} 
-               在 
-               a(href="/user/#{item.pageurl}/notebook/#{item.bookid}") [#{item.bookname}] 
-               写了一篇仅自己可见的日记... 
-           - else
-             li
-               a(href='/user/profile/#{item.pageurl}',title="#{item.created_user}") #{item.created_user} 
-               在 
-               a(href="/user/#{item.pageurl}/notebook/#{item.bookid}") [#{item.bookname}] 
-               写了一篇 
-               a(href="/diary/#{item.id}") 日记
-       - if(item.feed_type == 'todo')
-          li
-            a(href='/user/profile/#{item.pageurl}',title="#{item.created_user}") #{item.created_user} 
-            打算: #{item.content} 
-       - if(item.feed_type == 'notebook')
-          li
-            a(href='/user/profile/#{item.pageurl}',title="#{item.created_user}") #{item.created_user} 
-            新建了: 
-            a(href="/user/#{item.pageurl}/notebook/#{item.id}") #{item.name}
-       - if(item.feed_type == 'register')
-          li
-            a(href='/user/profile/#{item.id}',title="#{item.nick}") #{item.nick} 
-            加入了兔耳日记 
-     li 
-       a(href="/feeds",title="查看更多") 更多FEEDS...
- else
-   li There is nothing yet.
 //div(class='hot') 
 //    h4 热门日记
 //    hr 
@@ -43,13 +6,5 @@ div(class='hot')
 //            li 
 //        //        a(href='/diary/#{item.id}') #{item.content} 
 //        //        span (#{item.created_user} #{item.commentcount}回应)
-div(class='row Friends-list') 
-  h4 活跃用户
-  hr 
-  ul
-      each item,i in hotusers
-          li 
-              a(href='/user/profile/#{item.id}')
-                  img(src='#{item.avatarUrl}',class="img-rounded",alt='#{item.nick}')
-              span 
-                small #{item.nick}
+include news
+include hotusers

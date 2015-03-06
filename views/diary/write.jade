@@ -3,6 +3,7 @@ block content
   link(href="http://css.tuer.me/jquery.qeditor/font-awesome.min.css",rel="stylesheet")
   link(href="http://css.tuer.me/jquery.qeditor/jquery.qeditor.css",rel="stylesheet")
   script(src="http://js.tuer.me/jquery.qeditor/jquery.qeditor.js")
+  script(src="http://js.tuer.me/filereader/filereader.js")
   script.
     window.FileAPI = {staticPath:'/FileAPI/dist/'};
   script(src="http://js.tuer.me/FileAPI/dist/FileAPI.min.js")
@@ -109,6 +110,7 @@ block content
         span(style="margin:0 0 10px 0;padding:0px;",class="help-inline")
           i(class="icon-info-sign") 
           强烈推荐使用chrome或safari浏览器发布日记~
+        p(style="color:red;display:none;",id="cliptip") 剪切板图片正在上传中...
         textarea(placeholder="日记内容",class="textarea",id='content',name='content',rows='15') #{diary.content}
       div(class='control-group')
           label(class="inline") 
@@ -124,7 +126,7 @@ block content
               input(name='forbid',type='checkbox',value='1') 
             &nbsp;不允许被回复 
       div(class='control-group')
-        p 日记最多可写2200个字.
+        p 日记最多可写22000个字.
       div(class='control-group')
           button(type='submit',class='btn btn-primary') #{session.title}
     include ../common/footer
@@ -197,4 +199,24 @@ block content
                 alert('请选择小于5MB的图片文件上传');
               }
           });
+      });
+      var lock = false;
+      $(".qeditor_preview").fileClipboard({
+        on:{
+          load:function(e,file){
+           if(!lock){
+            lock = true;
+            $('#cliptip').show();
+            $.post('/images/upload',{ext:'.'+file.extra.extension,type:'ajax',file:e.target.result.replace('data:'+file.type+';base64,','')},function(ret){
+              if(ret.error){
+                alert(ret.error);
+              }else{
+                QEditor.action(editor,'insertimage',ret.url+'?w=600&h=600');
+              }
+              $('#cliptip').hide();
+              lock = false;
+            });
+           }
+          } 
+        }
       });
