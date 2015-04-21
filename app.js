@@ -7,7 +7,6 @@ config = require('./lib/config'),
 rootdir = config.rootdir;
 //RedisStore = require('connect-redis')(express);
 var myOAP = require('./lib/OAP');
-var toobusy = require('toobusy');
 var app = express.createServer();
 var wap = express.createServer();
 
@@ -36,11 +35,7 @@ function Configuration(app, rootdir) {
 		res.header("Access-Control-Allow-Origin", "*");
 		res.header("Access-Control-Allow-Headers", "X-Requested-With");
 		res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
-		if (toobusy()) {
-			res.send(503, "兔耳开小差了，请稍后访问，或手动刷新");
-		} else {
-			next();
-		}
+next();
 	});
 	app.use(myOAP.oauth());
 	app.use(myOAP.login());
@@ -50,6 +45,7 @@ function Configuration(app, rootdir) {
 		var s;
 		var ua = req.headers['user-agent'].toLowerCase();
 		var host = req.headers['host'];
+		console.log(host);
 		if (! ((/^m.tuer.me/).test(host)) && (s = ua.match(/msie ([\d.]+)/)) && parseInt(s[1], 10) <= 7) {
 			res.render('custom/ie', {
 				version: s[1]
@@ -102,6 +98,7 @@ exports.start = function(conf) {
 		production(wap);
 	});
 	//controllers
+console.log('routes');
 	require('./routes')(app);
 	require('./wapRoutes')(wap);
 
@@ -110,7 +107,6 @@ exports.start = function(conf) {
 
 	process.on('SIGINT', function() {
 		server.close();
-		//toobusy.shutdown();
 		process.exit();
 	});
 

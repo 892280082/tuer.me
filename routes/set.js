@@ -6,8 +6,9 @@ EventProxy = require('eventproxy').EventProxy;
 var path = require('path');
 var fs = require('fs');
 var uuid = require('node-uuid');
-var Canvas = require('canvas');
-var Image = Canvas.Image;
+var jimp = require('jimp');
+//var Canvas = require('canvas');
+//var Image = Canvas.Image;
 
 var index = function(req, res) {
   if (req.session.is_login) {
@@ -149,17 +150,12 @@ var avatarUpload = function(req, res) {
 
     tuerBase.findUser(uid,function(err,user){
       var pid = uuid.v1();
-      var buf = new Buffer(avatar.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+      var base64str = avatar.replace(/^data:image\/\w+;base64,/,'');
+      var buf = new Buffer(base64str, 'base64');
       fs.writeFileSync(basePath + '/big/' + pid + '.png', buf);
-      var img = new Image;
-      img.onload = function() {
-        var width = 48;
-        var height = 48;
-        var canvas = new Canvas(width,height);
-        var ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height, 0, 0, width, height);
-        canvas.toBuffer(function(err, buf) {
-          fs.writeFileSync(basePath + '/small/' + pid + '.png', buf);
+      var img = new jimp(buf,'image/png',function(){
+	img.crop(0,0,48,48);
+	img.write(basePath+'/small/'+pid+'.png',function(){
           if(user.avatar != 'default'){
             fs.unlinkSync(basePath + '/big/'+user.avatar+'.png'); 
             fs.unlinkSync(basePath + '/small/'+user.avatar+'.png'); 
@@ -178,9 +174,8 @@ var avatarUpload = function(req, res) {
             }
             res.send('upload passed');
           });
-        });
-      };
-      img.src = avatar;
+	});
+      }); 
     });
   } else {
     res.redirect('login');
@@ -209,20 +204,32 @@ var avatarSave = function(req, res) {
         res.send('save not passed');
         return;
       }
-
+     /*
       var img = new Image;
       img.onload = function(){
         var width = 48;
         var height = 48;
         var canvas = new Canvas(width,height);
         var ctx = canvas.getContext('2d');
-        coords = coords.split(',');
-        for (var i in coords) {
-          coords[i] = coords[i].toString() == 'NaN' ? 0: coords[i];
-        }
         ctx.drawImage(img, coords[2], coords[3], coords[0], coords[1], 0, 0, width, height);
         canvas.toBuffer(function(err, buf) {
           fs.writeFileSync(basePath + '/small/' + user.avatar + '.png', buf);
+        });
+      };
+      fs.readFile(basePath + '/big/'+user.avatar + '.png',function(err,squid){
+        if(err) throw err;
+        img.src = squid;
+      });
+     */
+console.log(coords);
+        coords = coords.split(',');
+        for (var i in coords) {
+          coords[i] = coords[i].toString() == 'NaN' ? 0: parseInt(coords[i],10);
+        }
+     var img = new jimp(basePath+'/big/'+user.avatar+'.png',function(){
+	img.crop(coords[2],coords[3],coords[0],coords[1]);
+	img.resize(48,48);
+	img.write(basePath+'/small/'+user.avatar+'.png',function(){
           tuerBase.updateById(uid, {
             $set: {
               coords: coords,
@@ -237,12 +244,8 @@ var avatarSave = function(req, res) {
             }
             res.send('save passed');
           });
-        });
-      };
-      fs.readFile(basePath + '/big/'+user.avatar + '.png',function(err,squid){
-        if(err) throw err;
-        img.src = squid;
-      });
+	});
+     });
     });
   } else {
     res.redirect('login');

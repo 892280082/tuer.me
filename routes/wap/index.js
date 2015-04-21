@@ -3,6 +3,7 @@ tuerBase = require('../../model/base'),
 EventProxy = require('eventproxy').EventProxy;
 
 exports.index = function(req, res) {
+console.log('m');
 	if (req.session.is_login) {
 		res.redirect('/profile/' + req.session.userdata.id);
 	} else {

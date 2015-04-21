@@ -18,7 +18,7 @@ var tuerBase = function(host, port) {
   },
   {}));
   this.db.open(function() {
-
+	console.log('db open');
   });
 };
 

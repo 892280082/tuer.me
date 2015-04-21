@@ -8,16 +8,15 @@
     "express site"
   ],
   "dependencies": {
+    "jimp":"*",
     "request":"*",
     "calendar": "0.1.0",
-    "canvas": "1.0.3",
     "cnzz-wap-nodejs": "*",
     "connect-redis": "1.3.0",
     "eventproxy": "0.1.2",
     "express": "2.5.8",
     "fs-extra": "0.9.1",
     "ga": "0.0.2",
-    "imagemagick": "0.1.2",
     "jade": "0.32.0",
     "lithe": "0.1.5",
     "log": "1.4.0",
@@ -30,7 +29,6 @@
     "restify": "2.3.5",
     "rss": "0.0.3",
     "serializer": ">=0.0.2 < 0.1.0",
-    "toobusy": "0.2.2",
     "xml2js": "0.2.0",
     "xss": "*",
     "yuicompressor": "2.4.8"

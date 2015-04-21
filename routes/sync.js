@@ -1,9 +1,9 @@
-var qrcode = require('qrcode');
+//var qrcode = require('qrcode');
 
 exports.qrcode = function(req,res,next){
-    qrcode.toDataURL('http://www.tuer.me/sync/index',function(err,data){
-        res.json({data:data});
-    });
+    //qrcode.toDataURL('http://www.tuer.me/sync/index',function(err,data){
+     //   res.json({data:data});
+    //});
 };
 
 exports.index = function(req,res,next){
