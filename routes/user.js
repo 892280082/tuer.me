@@ -9,6 +9,77 @@ escape = require('jade').runtime.escape,
 Avatar = require('../lib/avatar'),
 EventProxy = require('eventproxy').EventProxy;
 
+var Document = require('pdfjs');
+var fs = require('fs');
+var path = require('path');
+
+var pdf = function(req,res,next){
+  if (req.session.is_login) {
+
+  var uid = req.session.userdata.id;
+  var proxy = new EventProxy(),
+  render = function(user, isSelf, diaryCount, userDiaryList) {
+
+
+    fs.readFile(path.resolve(__dirname,'../fonts/wryh.ttf'),function(err,b){
+     if(err) throw err;
+     var doc = new Document(new Document.Font(b));
+    userDiaryList.forEach(function(item) {
+      util.setTime(item);
+      item.created_user = user.nick;
+      item.img = util.getpics(150, 1, item.filelist);
+      var img = util.getImgs(item.content)[0];
+      item.img = img ? img+'?w=150&h=150' : item.img;
+      item.content = xss(item.content,{whiteList:{},stripIgnoreTag:true});
+      item.avatarUrl = Avatar.getUrl(item.avatar);
+      doc.text(item.created_user,{size:14});
+      doc.text(item.created_at,{size:12});
+      doc.text(item.content,{size:12});
+    });
+     fs.writeFileSync(path.resolve(__dirname,'../public/pdf/'+user.id+'.pdf'),doc.toString(),'binary');
+     res.end('ok');
+    });
+
+  };
+
+  proxy.assign('user', 'isSelf', 'diaryCount', 'UserDiaryList', render);
+
+  tuerBase.findUser(uid, function(err, user) {
+    if (err) {
+      res.redirect('500');
+    } else {
+
+      proxy.trigger('user', user);
+
+      var uid = user._id.toString(),
+      isSelf = req.session.is_login ? (req.session.userdata._id.toString() == uid) : false;
+
+      proxy.trigger('isSelf', isSelf);
+
+      tuerBase.findDiaryCount(uid, isSelf, function(err, count) {
+        if (err) {
+          res.redirect('500');
+        } else {
+          proxy.trigger('diaryCount', count);
+      tuerBase.findDiaryByUserId(uid, isSelf, 0,count, function(err, lists) {
+        if (err) {
+          res.redirect('500');
+        } else {
+          proxy.trigger('UserDiaryList', lists);
+        }
+      });
+        }
+      });
+
+
+    }
+  });
+}else{
+    res.redirect('login');
+}
+
+};
+
 var profile = function(req, res) {
   var proxy = new EventProxy(),
   render = function(user, isSelf, diaryCount, userDiaryList, Follows, Followed, notebooks, defulatBook) {
@@ -558,4 +629,5 @@ exports.followusers = followusers;
 exports.followedusers = followedusers;
 exports.avatar = avatar;
 exports.art = art;
+exports.pdf = pdf;
 

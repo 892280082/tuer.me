@@ -25,6 +25,7 @@ admin = require('./routes/admin'),
 oap = require('./routes/oap'),
 say = require('./routes/say'),
 sync = require('./routes/sync'),
+h5 = require('./routes/h5'),
 search = require('./routes/search');
 
 module.exports = function(app) {
@@ -86,13 +87,15 @@ module.exports = function(app) {
 
 	app.get('/user/profile/:id', user.profile);
 	app.get('/user/:uid/diaries/:page?', user.diaries);
+	app.get('/user/pdf/', user.pdf);
+	app.get('/user/:uid/notebook/:id/:page?', user.notebook);
 	app.get('/user/:uid/notebook/:id/:page?', user.notebook);
 	app.get('/user/:uid/api/:page?', user.api);
 	app.get('/user/rss/:id', user.rss);
 	app.get('/user/follows/:id', user.followusers);
 	app.get('/user/followed/:id', user.followedusers);
-	app.get('/user/avatar/:id', user.avatar);
-	app.get('/user/art/:id', user.art);
+	//app.get('/user/avatar/:id', user.avatar);
+	//app.get('/user/art/:id', user.art);
 
 	app.get('/diaries/:page?', diary.list);
 	app.get('/diary/:id', diary.detail);
@@ -159,10 +162,12 @@ module.exports = function(app) {
 
 
 	app.post('/images/upload', images.upload);
-    app.post('/say/save',say.save);
+    	app.post('/say/save',say.save);
 	app.get('/sync/index', sync.index);
 	app.get('/sync/qrcode', sync.qrcode);
 	app.post('/sync/upload', sync.upload);
+
+	app.post('/h5/login/', h5.login);
 
 	app.get('/404', error.notFound);
 	app.get('/500', error.proError);

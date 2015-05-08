@@ -2,6 +2,8 @@ var restify = require('restify'),
 tuerBase = require('./model/base'),
 util = require('util'),
 path = require('path'),
+secret = 'tuer-jwt-secret',
+jwt = require('jwt-simple'),
 querystring = require('querystring'),
 serializer = require('serializer');
 
@@ -75,6 +77,45 @@ server.use(function(req,res,next){
 
 //全局校验
 server.use(function(req, res, next) {
+	//增加兔耳客户端的权限判断
+	if(req.query['supertoken']){
+	   var key = req.query['supertoken'];
+	   try{
+	   	var t = jwt.decode(key,secret);	  
+	   }catch(e){
+		next(new restify.NotAuthorizedError(e.message));
+		return;
+	   }
+	   if(t.exp <= Date.now()){
+		next(new restify.NotAuthorizedError('access token has expired'));
+		return;
+	   }
+	   tuerBase.findUser(t.id, function(err, data) {
+		if(err){
+		  next(new restify.NotAuthorizedError(err));
+		}else{
+		req.authorization = {
+			userdata: data,
+			client_id:'4214a2d24465e6daf7b8ba59a4beca6b',
+			user_id:data.id
+		};
+		 var url = req.url.slice(1);
+		 for (var uri in paths) {
+			var route = uri.slice(0, uri.indexOf(':')),
+			matchs = url.match(new RegExp("^(" + route + ")"));
+			if (matchs) {
+			  var query = querystring.parse(req.getQuery());
+			  if (req.authorization || (paths[uri][0] === 'public' && query['client_id'])) return next();
+			  else return next(new restify.NotAuthorizedError('not authorized'));
+			  break;
+			}
+		 }
+		 return next();
+		}		
+	   });
+	   return;
+	}
+
 	var data, atok, user_id, client_id, grant_date, extra_data, TOKEN_TTL = 30 * 24 * 60 * 60 * 1000; //30天有效期
 	if (req.query['access_token']) {
 		atok = req.query['access_token'];

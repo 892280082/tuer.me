@@ -6,20 +6,20 @@ html
     meta(content='text/html;charset=utf-8',http-equiv='Content-Type')
     meta(name="description",content="兔耳日记，记录精彩每一天")
     meta(name="author",content="小爝")
-    link(rel='shortcut icon',href='https://login.tuer.me/favicon.ico',type='image/x-icon')
-    link(rel='icon',href='https://login.tuer.me/favicon.ico',type='image/x-icon')
+    link(rel='shortcut icon',href='http://login.tuer.me/favicon.ico',type='image/x-icon')
+    link(rel='icon',href='http://login.tuer.me/favicon.ico',type='image/x-icon')
     if(session.template == 'Invite')
       meta(http-equiv="pragma",content="no-cache")
       meta(http-equiv="cache-control",content="no-cache,must-revalidate,private,no-store")
       meta(http-equiv="expires",content="Sun, 6 Mar 2005 01:00:00 GMT")
       meta(http-equiv="expires",content="0")
-    link(rel='stylesheet', href='https://login.tuer.me/bootstrap/css/bootstrap.min.css')
-    link(rel='stylesheet', href='https://login.tuer.me/bootstrap/css/todc-bootstrap.min.css')
-    link(rel='stylesheet', href='https://login.tuer.me/style/css/common.min.css?v=201304021030')
+    link(rel='stylesheet', href='http://login.tuer.me/bootstrap/css/bootstrap.min.css')
+    link(rel='stylesheet', href='http://login.tuer.me/bootstrap/css/todc-bootstrap.min.css')
+    link(rel='stylesheet', href='http://login.tuer.me/style/css/common.min.css?v=201304021030')
     if(session.template == 'profile' || session.template == 'myprofile')
-    script(src='https://login.tuer.me/jquery/jquery-1.7.2.min.js')
-    script(src='https://login.tuer.me/bootstrap/js/bootstrap.min.js')
-    script(data-path="https://login.tuer.me/libs/",src='https://login.tuer.me/lithe/lithe-min.js')
+    script(src='http://login.tuer.me/jquery/jquery-1.7.2.min.js')
+    script(src='http://login.tuer.me/bootstrap/js/bootstrap.min.js')
+    script(data-path="http://login.tuer.me/libs/",src='http://login.tuer.me/lithe/lithe-min.js')
     script.
       lithe.use('mods/common.min.js?v=20121022');
   body(data-spy="scroll",data-target=".bs-docs-sidebar")
@@ -35,9 +35,9 @@ html
              ul(class='nav nav-pills')
                - var muens;
                - if(session.is_login){
-                 - muens = [{text:'首页',href:'https://www.tuer.me/',template:'index'},{text:'全部日记',href:'https://www.tuer.me/diaries',template:'diaries'},{text:'我的主页',href:'https://www.tuer.me/user/profile/'+session.userdata._id,template:'myprofile'}];
+                 - muens = [{text:'首页',href:'http://www.tuer.me/',template:'index'},{text:'全部日记',href:'http://www.tuer.me/diaries',template:'diaries'},{text:'我的主页',href:'http://www.tuer.me/user/profile/'+session.userdata._id,template:'myprofile'}];
                - }else{
-                 - muens = [{text:'首页',href:'https://www.tuer.me/',template:'index'},{text:'全部日记',href:'https://www.tuer.me/diaries/',template:'diaries'}];
+                 - muens = [{text:'首页',href:'http://www.tuer.me/',template:'index'},{text:'全部日记',href:'http://www.tuer.me/diaries/',template:'diaries'}];
                - }
                for muen in muens
                  - var cls='';
@@ -50,11 +50,11 @@ html
                    a(class='dropdown-toggle',data-toggle='dropdown',href='#') 更多
                      b(class='caret')
                    ul(class='dropdown-menu')
-                     - var more = [{text:'我的TODOS',href:'https://www.tuer.me/todo/'+session.userdata._id,template:'mytodo'},{text:'关注的日记',href:'https://www.tuer.me/followed/diaries/',template:'followedDiaries'}];
+                     - var more = [{text:'我的TODOS',href:'http://www.tuer.me/todo/'+session.userdata._id,template:'mytodo'},{text:'关注的日记',href:'http://www.tuer.me/followed/diaries/',template:'followedDiaries'}];
                      for muen in more
                        li
                          a(href='#{muen.href}',title='#{muen.text}') #{muen.text}
-           form(class='navbar-search pull-left',action='https://www.tuer.me/search/',method='get')
+           form(class='navbar-search pull-left',action='http://www.tuer.me/search/',method='get')
              input(class='search-query span2',type='text',placeholder='Search',name='q')
            ul(class='nav pull-right')
              - var operate = config.nav
@@ -64,7 +64,7 @@ html
               li
                 a(href='#{item.href}') #{item.text}
     div(class='container')
-      form(class='form-horizontal',method='post',action='https://login.tuer.me/login')
+      form(class='form-horizontal',method='post',action='http://login.tuer.me/login')
         input(type='hidden',value="#{next_url}",name="next_url")
         legend 登录本站
         if(session.error.length)
@@ -81,15 +81,15 @@ html
         div(class='control-group')
           div(class='controls')
             p
-              a(href='https://www.tuer.me/forgot/') 忘记密码 &nbsp;
-              a(href='https://www.tuer.me/register/') 注册 
+              a(href='http://www.tuer.me/forgot/') 忘记密码 &nbsp;
+              a(href='http://www.tuer.me/register/') 注册 
             label(class='checkbox') 记住我
               input(type='checkbox',name='remember')
             button(type='submit',class='btn btn-primary') 登入
       hr
       footer
         p 网站基于Nodejs开发 版权所有 &copy; 2012-2014 Tuer.me 
-         a(href='https://github.com/xiaojue/tuer.me',target='_blank') 源码 
+         a(href='http://github.com/xiaojue/tuer.me',target='_blank') 源码 
        p
          each item,i in config.footer
            a(href='#{item.href}') #{item.text} 

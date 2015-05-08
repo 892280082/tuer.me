@@ -44,7 +44,7 @@ next();
 		var sys = {};
 		var s;
 		var ua = req.headers['user-agent'] ? req.headers['user-agent'].toLowerCase() : '';
-		console.log(host);
+		var host = req.headers['host'] ? req.headers['host'] :'';
 		if (! ((/^m.tuer.me/).test(host)) && (s = ua.match(/msie ([\d.]+)/)) && parseInt(s[1], 10) <= 7) {
 			res.render('custom/ie', {
 				version: s[1]

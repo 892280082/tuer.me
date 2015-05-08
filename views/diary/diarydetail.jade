@@ -118,16 +118,16 @@ block content
              else
                a(href='#',id="loginIn") 登录之后就可以评论啦！
                script.
-                 $('#loginIn').attr('href','https://login.tuer.me/login?next='+encodeURIComponent(location.href));
+                 $('#loginIn').attr('href','http://login.tuer.me/login?next='+encodeURIComponent(location.href));
     hr
-    style
+    style.
       .my_adslot { width: 320px; height: 50px; }
       @media(min-width: 500px) { .my_adslot { width: 468px; height: 60px; } }
       @media(min-width: 800px) { .my_adslot { width: 728px; height: 90px; } }
     script(async,src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js")
     <!-- 兔耳详情页广告 -->
     ins(class="adsbygoogle my_adslot",style="display:inline-block",data-ad-client="ca-pub-7564906659770902",data-ad-slot="9866266036")
-    script
+    script.
       (adsbygoogle = window.adsbygoogle || []).push({});
     include ../common/footer
     if(diary.img)
