@@ -1,0 +1,5 @@
+*.swp
+*~
+preview/*
+node_modules
+TODO
