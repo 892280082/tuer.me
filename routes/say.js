@@ -20,6 +20,10 @@ var save = function(req,res){
   }
   var body = req.body,
   content = body.content;
+  if(content.length > 24){
+    res.redirect('500');
+    return;
+  }
   tuerBase.save({
     content:content,
     userid:req.session.userdata._id.toString()
@@ -39,4 +43,32 @@ var save = function(req,res){
   });
 };
 
+var remove = function(req,res){
+  if (!req.session.is_login) {
+    res.redirect('login');
+    return;
+  }
+  var body = req.body,id = body.id,uid = req.session.userdata._id.toString();
+  tuerBase.findById(id,'say',function(err,say){
+    if(err){
+	res.redirect('500');
+    }else{
+	if(say.userid === uid){
+	  tuerBase.removeById(id,'say',function(err,say){
+		if(err) res.redirect('500');
+		else{
+		  tuerBase.removeFeed(id,function(err){
+			if(err) throw err;
+    			res.redirect('back');
+		  });
+		}
+	  });
+        }else{
+	 res.redirect('500');
+	}
+    }
+  });
+};
+
 exports.save = save;
+exports.remove = remove;

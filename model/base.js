@@ -676,12 +676,186 @@ tuerBase.prototype.findFeeds = function(source, start, end, callback) {
   });
 };
 
+tuerBase.prototype.findFeedsByTypes = function(source,types, start, end, callback) {
+  var self = this;
+  source = source || {};
+  source.type = {
+    "$in":types.map(function(i){ return i.slice(0,-1);})
+  };
+console.log(source);
+  self._findFeed(source, start, end, function(err, data) {
+    if (err) callback(err);
+    else {
+      //分类，再同时查找todo和diary,notebook,register，再合并返回
+      function addType(data, type) {
+        for (var i = 0; i < data.length; i++) {
+          var item = data[i];
+          item['feed_type'] = type;
+          if (type == 'diary') {
+            item.img = util.getpics(150, 1, item.filelist);
+            var img = util.getImgs(item.content)[0];
+            item.img = img ? img+'?w=150&h=150' : item.img;
+            item.content = xss(item.content,{whiteList:{},stripIgnoreTag:true});
+            item.content = item.content.length > 150 ? item.content.slice(0, 150) + '...': item.content;
+            item.avatar = item.avatar;
+          }
+        }
+      }
+      var proxy = new EventProxy(),
+      finish = function() {
+        var feeds = [],args = [];
+	for(var i=0;i<arguments.length;i++){
+	  if(typeof arguments[i] === 'function') continue;
+       	  addType(arguments[i].slice(0,-1), types[i]);
+	  args.push(arguments[i]);
+	}
+	args = [].concat.apply(Array.prototype,args);
+        feeds = feeds.concat(args).sort(function(a, b) {
+          return b.created_at - a.created_at;
+        });
+        feeds.forEach(function(item) {
+          util.setTime(item);
+        });
+        callback(null, feeds);
+      };
+
+      proxy.assign.apply(proxy,types.concat([finish]));
+
+      var todos = [],
+      diarys = [],
+      notebooks = [],
+      says = [],
+      registers = [];
+      for (var i = 0; i < data.length; i++) {
+        var type = data[i]['type'],
+        id = ObjectID.createFromHexString(data[i].id);
+        if (type == 'todo') todos.push(id);
+        if (type == 'diary') diarys.push(id);
+        if (type == 'notebook') notebooks.push(id);
+        if (type == 'register') registers.push(id);
+        if (type == 'say') says.push(id);
+      }
+      var hasTodos = types.indexOf('todos') > -1;
+      var hasDiarys = types.indexOf('diarys') > -1;
+      var hasNoteBooks = types.indexOf('notebooks') > -1;
+      var hasRegisters = types.indexOf('registers') > -1;
+      var hasSays = types.indexOf('says') > -1;
+
+      if (todos.length && hasTodos) {
+        self.findBySortSlice({
+          _id: {
+            $in: todos
+          }
+        },
+        {
+          created_at: - 1
+        },
+        'todos', 0, todos.length, function(err, todolist) {
+          if (err) callback(err);
+          else {
+            self.batchAddUser(todolist, 'userid', function(err, todolist) {
+              if (err) callback(err);
+              else proxy.trigger('todos', todolist);
+            });
+          }
+        });
+      } else if(hasTodos) {
+        proxy.trigger('todos', todos);
+      }
+
+      if (diarys.length && hasDiarys) {
+        self.getCollection('diary', function(err, db) {
+          if (err) callback(err);
+          else {
+            var cursor = db.find({
+              _id: {
+                $in: diarys
+              }
+            }).skip(0).limit(diarys.length).sort({
+              created_at: - 1
+            });
+            self.batchDiary(cursor, function(err, diarylist) {
+              if (err) callback(err);
+              else proxy.trigger('diarys', diarylist);
+            });
+          }
+        });
+      } else if(hasDiarys) {
+        proxy.trigger('diarys', diarys);
+      }
+
+      if (notebooks.length && hasNoteBooks) {
+        self.findBySortSlice({
+          _id: {
+            $in: notebooks
+          }
+        },
+        {
+          created_at: - 1
+        },
+        'notebooks', 0, notebooks.length, function(err, notebooklist) {
+          if (err) callback(err);
+          else {
+            self.batchAddUser(notebooklist, 'owner', function(err, notebooklist) {
+              if (err) callback(err);
+              else proxy.trigger('notebooks', notebooklist);
+            });
+          }
+        });
+      } else if(hasNoteBooks){
+        proxy.trigger('notebooks', notebooks);
+      }
+      if (registers.length && hasRegisters) {
+        self.findBySortSlice({
+          _id: {
+            $in: registers
+          }
+        },
+        {
+          created_at: - 1
+        },
+        'users', 0, registers.length, function(err, userlist) {
+          if (err) callback(err);
+          else {
+            proxy.trigger('registers', userlist);
+          }
+        });
+      } else if(hasRegisters){
+        proxy.trigger('registers', registers);
+      }
+      if(says.length && hasSays){
+        self.findBySortSlice({
+          _id: {
+            $in: says
+          }
+        },
+        {
+          created_at: - 1
+        },
+        'say', 0, says.length, function(err, list) {
+          if (err) callback(err);
+          else {
+            self.batchAddUser(list,'userid',function(err,list){
+               if(err) callback(err); 
+               else proxy.trigger('says', list);
+            });
+          }
+        });
+      }else if(hasSays){
+        proxy.trigger('says', says);
+      }
+    }
+  });
+};
+
 tuerBase.prototype._findFeed = function(source, start, end, callback) {
   var self = this;
   this.getCollection('feed', function(err, db) {
     if (err) callback(err);
     else {
+	delete source['type'];
       var cursor = db.find(source);
+	console.log(source);
       cursor.sort({
         created_at: - 1
       }).skip(start).limit(end - start).toArray(function(err, data) {

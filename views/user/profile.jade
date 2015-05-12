@@ -8,42 +8,60 @@ block content
            small &nbsp;&nbsp;(#{user.profile})
          hr 
          if(userDiaryList.length)
-           h4 #{user.nick}的日记
-            small (#{diaryCount})
+           h4 #{user.nick} 
+            small 日记 (#{diaryCount})
            div(class='Diary-wrap')
              each item,i in userDiaryList 
-               h5 
-                 a(href="/diary/#{item.id}") #{item.created_user}的日记 
-                 if(item.title)
-                   a(href='/diary/#{item.id}') 
-                     small #{item.title} 
-                   a(href="/user/#{item.pageurl}/notebook/#{item.bookid}") 
-                     small [#{item.bookname}] 
-                   if(item.privacy == 1)
-                     small [仅自己可见] 
+               if(item.feed_type == 'diarys')
+                 if(item.privacy == '0' || isSelf)
+                   h5 
+                     a(href="/diary/#{item.id}") #{item.created_user}的日记 
+                     if(item.title)
+                       a(href='/diary/#{item.id}') 
+                         small #{item.title} 
+                       a(href="/user/#{item.pageurl}/notebook/#{item.bookid}") 
+                         small [#{item.bookname}] 
+                       if(item.privacy == 1)
+                         small [仅自己可见] 
+                     else
+                       a(href="/user/#{item.pageurl}/notebook/#{item.bookid}") 
+                         small [#{item.bookname}] 
+                       if(item.privacy == 1)
+                         small [仅自己可见] 
+                       if(item.weather)
+                         small [天气:#{item.weather}] 
+                       if(item.mood)
+                         small [心情:#{item.mood}] 
+                       if(item.location)
+                         small [地点:#{item.location}]
+                    div(class='Diary-content')
+                      if(item.img)
+                        img(class="img-rounded",src='#{item.img}')
+                      p !{item.content}
+                    div(class='bar') #{item.created_at}
+                      small #{item.commentcount}回复 
+                      if(isSelf)
+                      form(action='/diary/remove',method='post') 
+                       input(type='hidden',value='#{item._id}',name='id')
+                       div(class="btn-group")
+                        a(class='btn btn-mini',href='/diary/edit/#{item.id}') Edit
+                        button(class='btn btn-danger btn-mini',type='submit') Del 
                  else
-                   a(href="/user/#{item.pageurl}/notebook/#{item.bookid}") 
-                     small [#{item.bookname}] 
-                   if(item.privacy == 1)
-                     small [仅自己可见] 
-                   if(item.weather)
-                     small [天气:#{item.weather}] 
-                   if(item.mood)
-                     small [心情:#{item.mood}] 
-                   if(item.location)
-                     small [地点:#{item.location}]
-               div(class='Diary-content')
-                  if(item.img)
-                    img(class="img-rounded",src='#{item.img}')
-                  p !{item.content}
-               div(class='bar') #{item.created_at}
-                 small #{item.commentcount}回复 
-                 if(isSelf)
-                   form(action='/diary/remove',method='post') 
-                     input(type='hidden',value='#{item._id}',name='id')
-                     div(class="btn-group")
-                      a(class='btn btn-mini',href='/diary/edit/#{item.id}') Edit
-                      button(class='btn btn-danger btn-mini',type='submit') Del 
+                   p 
+                     small #{item.created_user} 在 
+                     a(href="/user/#{item.pageurl}/notebook/#{item.bookid}") #{item.bookname} 
+                     中写了一篇仅自己可见的日记...
+                   div(class='bar') #{item.created_at} 
+                     small #{item.commentcount}回复
+               if(item.feed_type == 'says')
+                 h5 #{item.created_user}说:
+                 p #{item.content}
+                 div(class='bar') #{item.created_at}
+                  if(isSelf)
+                   form(action='/say/remove',method='post') 
+                    input(type='hidden',value='#{item._id}',name='id')
+                    div(class="btn-group")
+                     button(class='btn btn-danger btn-mini',type='submit') Del 
            !{pag}
          else
            p 额，他还神马都没有写过……

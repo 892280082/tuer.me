@@ -87,6 +87,14 @@ html
               input(type='checkbox',name='remember')
             button(type='submit',class='btn btn-primary') 登入
       hr
+      style.
+        .my_adslot { width: 320px; height: 50px; }
+        @media(min-width: 500px) { .my_adslot { width: 468px; height: 60px; } }
+        @media(min-width: 800px) { .my_adslot { width: 728px; height: 90px; } }
+      script(async,src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js")
+      ins(class="adsbygoogle my_adslot",style="display:inline-block",data-ad-client="ca-pub-7564906659770902",data-ad-slot="9866266036")
+      script.
+        (adsbygoogle = window.adsbygoogle || []).push({});
       footer
         p 网站基于Nodejs开发 版权所有 &copy; 2012-2014 Tuer.me 
          a(href='http://github.com/xiaojue/tuer.me',target='_blank') 源码 

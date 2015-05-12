@@ -103,12 +103,9 @@ var profile = function(req, res) {
     } ();
 
     userDiaryList.forEach(function(item) {
-      util.setTime(item);
-      item.created_user = user.nick;
-      item.img = util.getpics(150, 1, item.filelist);
       var img = util.getImgs(item.content)[0];
       item.img = img ? img+'?w=150&h=150' : item.img;
-      item.content = xss(item.content,{whiteList:{},stripIgnoreTag:true});
+      if(item.feed_type == 'diarys') item.content = xss(item.content,{whiteList:{},stripIgnoreTag:true});
       item.content = item.content.length > 150 ? item.content.slice(0, 150) + '...': item.content;
     });
 
@@ -187,7 +184,7 @@ var profile = function(req, res) {
           proxy.trigger('DiaryCount', DiaryCount);
         }
       });
-
+      /*
       tuerBase.findDiaryByUserId(uid, isSelf, 0, 20, function(err, lists) {
         if (err) {
           res.redirect('500');
@@ -195,7 +192,17 @@ var profile = function(req, res) {
           proxy.trigger('UserDiaryList', lists);
         }
       });
-
+      */
+      tuerBase.findFeedsByTypes({
+	uid:uid
+      },['diarys','says'],0,20,function(err,lists){
+        if (err) {
+          res.redirect('500');
+        } else {
+	  console.log(lists);
+          proxy.trigger('UserDiaryList', lists);
+        }
+      });
       tuerBase.findFollows(uid, 10, function(err, follows, followscount) {
         if (err) {
           res.redirect('500');
@@ -269,7 +276,6 @@ var notebook = function(req, res) {
       item.img = util.getpics(150, 1, item.filelist);
       var img = util.getImgs(item.content)[0];
       item.img = img ? img+'?w=150&h=150' : item.img;
-      item.content = xss(item.content,{whiteList:{},stripIgnoreTag:true});
       item.content = xss(item.content,{whiteList:{},stripIgnoreTag:true});
       item.content = item.content.length > 150 ? item.content.slice(0, 150) + '...': item.content;
       item.weather = item.weather ? (config.weather[item.weather] ? config.weather[item.weather].value : item.weather ): undefined;

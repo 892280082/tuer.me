@@ -62,6 +62,7 @@ block content
               div(id='J_UserBar')
                 div(class='btn-group hot',id='J_UserBar')
                   a(class="btn btn-primary",href='/diary/write',title='写日记') 写日记
+                  a(class="btn",href='#sayDialog',data-toggle="modal",title='说说') 说说
                   a(class="btn",href='/notebook',title='管理日记本') 管理日记本
                   a(class="btn",href='/todo',title='管理Todo') 管理TODO
               hr
@@ -88,12 +89,13 @@ block content
               div(class='hot')
                 a(href="http://www.tuer.me/app/tr_V1.0.4.apk",target="_blank")
                   img(src="http://www.tuer.me/style/image/android.png",alt="兔耳android客户端")
-            hr
-            a(href="http://www.chinesean.com/affiliate/clickBanner.do?wId=55139&pId=10769&cId=18489",target="_blank")
-              img(src="http://img.chinesean.com/creative-image/2/20f9507d295142dca21777bf594a43a2-469530180",width="300",height="250",border="0")
-            hr
-            a(href="http://www.chinesean.com/affiliate/clickBanner.do?wId=55139&pId=10489&cId=14969",target="_blank")
-              img(src="http://img.chinesean.com/creative-image/2/20f9507d295142dca21777bf594a43a2-678828346",width="300",height="250",border="0")
+            //
+              hr
+              a(href="http://www.chinesean.com/affiliate/clickBanner.do?wId=55139&pId=10769&cId=18489",target="_blank")
+                img(src="http://img.chinesean.com/creative-image/2/20f9507d295142dca21777bf594a43a2-469530180",width="300",height="250",border="0")
+              hr
+              a(href="http://www.chinesean.com/affiliate/clickBanner.do?wId=55139&pId=10489&cId=14969",target="_blank")
+                img(src="http://img.chinesean.com/creative-image/2/20f9507d295142dca21777bf594a43a2-678828346",width="300",height="250",border="0")
             hr
             script.
               google_ad_client = "ca-pub-7564906659770902";
@@ -111,8 +113,33 @@ block content
               hr
     include common/footer
   if(session.is_login)
+    div(id="sayDialog",role="dialog",class="modal hide fade",tabindex="-1",aria-hidden="true",aria-labelledby="say")
+      div(class="modal-body",style="text-align:left;")
+        form(id="says",action="/say/save",method="post")
+          p
+           textarea(id="sayContent",name="content",class="form-control",row="2",style="width:490px;")
+          p
+           button(class="btn btn-primary",type="submit") 发送 
+           &nbsp;还可以输入个 
+           span(id="txt",style="color:red;")
+           字符
     script.
       lithe.use('mods/index.min.js?t=20130320');
+      $('#says').submit(function(){
+         var content = $.trim($('#sayContent').val());
+         if(content.length > 24 || content.length === 0){
+          alert('不能超过24个字符或者为空');
+          return false;
+         }
+      });
+      function txt(){
+         var content = $.trim($('#sayContent').val());
+         $('#txt').text(24-content.length);
+      }
+      $('#sayContent').bind('keyup focus blur',function(){
+         txt();
+      });
+      txt();
   script.
     $('.Diary-content img').each(function(){
         var bigimg = $(this).attr('src').replace(/\?.*$/,'') + '?w=-&h=-';

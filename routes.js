@@ -163,6 +163,7 @@ module.exports = function(app) {
 
 	app.post('/images/upload', images.upload);
     	app.post('/say/save',say.save);
+    	app.post('/say/remove',say.remove);
 	app.get('/sync/index', sync.index);
 	app.get('/sync/qrcode', sync.qrcode);
 	app.post('/sync/upload', sync.upload);
