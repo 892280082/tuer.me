@@ -12,7 +12,7 @@ block content
             small 日记 (#{diaryCount})
            div(class='Diary-wrap')
              each item,i in userDiaryList 
-               if(item.feed_type == 'diarys')
+               if(item.feed_type == 'diary')
                  if(item.privacy == '0' || isSelf)
                    h5 
                      a(href="/diary/#{item.id}") #{item.created_user}的日记 
@@ -53,7 +53,7 @@ block content
                      中写了一篇仅自己可见的日记...
                    div(class='bar') #{item.created_at} 
                      small #{item.commentcount}回复
-               if(item.feed_type == 'says')
+               if(item.feed_type == 'say')
                  h5 #{item.created_user}说:
                  p #{item.content}
                  div(class='bar') #{item.created_at}

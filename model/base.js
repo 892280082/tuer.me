@@ -682,7 +682,6 @@ tuerBase.prototype.findFeedsByTypes = function(source,types, start, end, callbac
   source.type = {
     "$in":types.map(function(i){ return i.slice(0,-1);})
   };
-console.log(source);
   self._findFeed(source, start, end, function(err, data) {
     if (err) callback(err);
     else {
@@ -700,14 +699,14 @@ console.log(source);
             item.avatar = item.avatar;
           }
         }
+        return data;
       }
       var proxy = new EventProxy(),
       finish = function() {
         var feeds = [],args = [];
 	for(var i=0;i<arguments.length;i++){
-	  if(typeof arguments[i] === 'function') continue;
-       	  addType(arguments[i].slice(0,-1), types[i]);
-	  args.push(arguments[i]);
+       	  var data = addType(arguments[i], types[i].slice(0,-1));
+	  args.push(data);
 	}
 	args = [].concat.apply(Array.prototype,args);
         feeds = feeds.concat(args).sort(function(a, b) {
@@ -855,7 +854,6 @@ tuerBase.prototype._findFeed = function(source, start, end, callback) {
     else {
 	delete source['type'];
       var cursor = db.find(source);
-	console.log(source);
       cursor.sort({
         created_at: - 1
       }).skip(start).limit(end - start).toArray(function(err, data) {
