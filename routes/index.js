@@ -26,6 +26,7 @@ var index = function(req,res,next){
         //写一个提取html富文本中第一张图片的函数，然后赋值给item.img
         var img = util.getImgs(item.content)[0];
         item.img = img ? img+'?w=150&h=150' : item.img;
+        item.wav = util.getWavs(item.content)[0];
         item.content = xss(item.content,{whiteList:{},stripIgnoreTag:true});
           item.content = item.content.length > 150 ? item.content.slice(0, 150) + '...': item.content;
         });

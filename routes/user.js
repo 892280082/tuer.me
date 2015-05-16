@@ -30,7 +30,9 @@ var pdf = function(req,res,next){
       item.img = util.getpics(150, 1, item.filelist);
       var img = util.getImgs(item.content)[0];
       item.img = img ? img+'?w=150&h=150' : item.img;
-      item.content = xss(item.content,{whiteList:{},stripIgnoreTag:true});
+      item.wav = util.getWavs(item.content)[0] || item.wav;
+      item.content = xss(item.content,{whiteList:{
+	},stripIgnoreTag:true});
       item.avatarUrl = Avatar.getUrl(item.avatar);
       doc.text(item.created_user,{size:14});
       doc.text(item.created_at,{size:12});
@@ -105,7 +107,9 @@ var profile = function(req, res) {
     userDiaryList.forEach(function(item) {
       var img = util.getImgs(item.content)[0];
       item.img = img ? img+'?w=150&h=150' : item.img;
-      if(item.feed_type == 'diarys') item.content = xss(item.content,{whiteList:{},stripIgnoreTag:true});
+      item.wav = util.getWavs(item.content)[0] || item.wav;
+      if(item.feed_type == 'diarys') item.content = xss(item.content,{whiteList:{
+},stripIgnoreTag:true});
       item.content = item.content.length > 150 ? item.content.slice(0, 150) + '...': item.content;
     });
 
@@ -199,7 +203,6 @@ var profile = function(req, res) {
         if (err) {
           res.redirect('500');
         } else {
-	  console.log(lists);
           proxy.trigger('UserDiaryList', lists);
         }
       });
@@ -276,7 +279,9 @@ var notebook = function(req, res) {
       item.img = util.getpics(150, 1, item.filelist);
       var img = util.getImgs(item.content)[0];
       item.img = img ? img+'?w=150&h=150' : item.img;
-      item.content = xss(item.content,{whiteList:{},stripIgnoreTag:true});
+      item.wav = util.getWavs(item.content)[0] || item.wav;
+      item.content = xss(item.content,{whiteList:{
+},stripIgnoreTag:true});
       item.content = item.content.length > 150 ? item.content.slice(0, 150) + '...': item.content;
       item.weather = item.weather ? (config.weather[item.weather] ? config.weather[item.weather].value : item.weather ): undefined;
       item.mood = item.mood ? (config.mood[item.mood] ? config.mood[item.mood].value : item.mood): undefined;
@@ -356,7 +361,7 @@ var notebook = function(req, res) {
 
 var diaries = function(req, res, next) {
   var page = req.params.page,
-  space = 6,
+  space = 20,
   uid = req.params.uid;
   if (page && isNaN(page)) {
     res.redirect('404');
@@ -376,7 +381,9 @@ var diaries = function(req, res, next) {
       item.img = util.getpics(150, 1, item.filelist);
       var img = util.getImgs(item.content)[0];
       item.img = img ? img+'?w=150&h=150' : item.img;
-      item.content = xss(item.content,{whiteList:{},stripIgnoreTag:true});
+      item.wav = util.getWavs(item.content)[0];
+      item.content = xss(item.content,{whiteList:{
+},stripIgnoreTag:true});
       item.content = item.content.length > 150 ? item.content.slice(0, 150) + '...': item.content;
       item.avatarUrl = Avatar.getUrl(item.avatar);
       item.isSelf = req.session.is_login ? item.userid == req.session.userdata._id.toString() : false;
@@ -453,7 +460,8 @@ var rss = function(req, res) {
     diaries.forEach(function(item) {
       feed.item({
         title: item.title || item.bookname,
-        description:xss(item.content,{whiteList:{},stripIgnoreTag:true}),
+        description:xss(item.content,{whiteList:{
+},stripIgnoreTag:true}),
         url: 'http://tuer.me/diary/' + item.id,
         author: user.nick,
         date: item.created_at

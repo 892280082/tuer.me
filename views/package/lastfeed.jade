@@ -38,6 +38,8 @@ if(feeds.length)
                    small [心情:#{item.mood}] 
                  if(item.location)
                    small [地点:#{item.location}]
+                 if(item.wav)
+                   i(class="icon-music")
                div(class='Diary-content')
                   if(item.img)
                     img(class="img-rounded",src='#{item.img}')

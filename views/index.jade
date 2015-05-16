@@ -1,5 +1,6 @@
 extends common/layout
 block content
+  link(href='/At.js/dist/css/jquery.atwho.css',rel="stylesheet")
   style.
     .Diary-content img{
       width:150px; 
@@ -42,6 +43,8 @@ block content
                            small [心情:#{item.mood}] 
                          if(item.location)
                            small [地点:#{item.location}] 
+                         if(item.wav)
+                           i(class="icon-music")
                        div(class='Diary-content')
                           if(item.img)
                            img(class="img-rounded",src='#{item.img}')
@@ -103,6 +106,13 @@ block content
               google_ad_width = 300;
               google_ad_height = 250;
             script(type="text/javascript",src="http://pagead2.googlesyndication.com/pagead/show_ads.js")
+            hr
+            script.
+              var cpro_id = "u2101179";
+            script(src="http://cpro.baidustatic.com/cpro/ui/c.js")
+            hr
+            a(href="http://www.chinesean.com/affiliate/clickBanner.do?wId=55139&pId=10855&cId=15580",target="_blank",style="text-align:center;width:300px;display:block;")
+              img(src="http://img.chinesean.com/creative-image/1/20f9507d295142dca21777bf594a43a2-602496966",width="250",height="250",border="0")
             //
               hr
               div(class='hot')
@@ -111,6 +121,14 @@ block content
               div(class='hot')
                 <a href="http://www.usbaba.com/?f=tuer" target="_blank"><img src="http://www.tuer.me/style/image/usbaba.jpeg" alt="usbaba"></a>
               hr
+    script.
+      $('.Diary-content img').each(function(){
+        var bigimg = $(this).attr('src').replace(/\?.*$/,'') + '?w=-&h=-';
+        $(this).wrap('<a class="fancybox" rel="group" href="'+bigimg+'">');
+      });
+      $('a.fancybox').fancybox({
+        fitToView:false  
+      });
     include common/footer
   if(session.is_login)
     div(id="sayDialog",role="dialog",class="modal hide fade",tabindex="-1",aria-hidden="true",aria-labelledby="say")
@@ -123,6 +141,8 @@ block content
            &nbsp;还可以输入个 
            span(id="txt",style="color:red;")
            字符
+    script(src='/Caret.js/dist/jquery.caret.js')
+    script(src='/At.js/dist/js/jquery.atwho.js')
     script.
       lithe.use('mods/index.min.js?t=20130320');
       $('#says').submit(function(){
@@ -140,12 +160,16 @@ block content
          txt();
       });
       txt();
-  script.
-    $('.Diary-content img').each(function(){
-        var bigimg = $(this).attr('src').replace(/\?.*$/,'') + '?w=-&h=-';
-        $(this).wrap('<a class="fancybox" rel="group" href="'+bigimg+'">');
-     });
-     $('a.fancybox').fancybox({
-        fitToView:false  
-     });
-    
+      var emojis = $.map(window.emojikeys.split('|'),function(value,i){return {key:value,name:value}});
+      emojis[0] = {key:'\+1',name:'+1'};
+      setTimeout(function(){
+       var comment = $('#sayContent').atwho({
+         at:"\:",
+         data:emojis,
+         displayTpl:"<li>${name} <img src='http://img.tuer.me/jquery-emoji/images/emojis/${key}.png'  height='20' width='20' /></li>",
+         delay:400,
+         insertTpl:':${key}:',
+       });
+       comment.caret('pos',47);
+       comment.atwho('run');
+      },1000)

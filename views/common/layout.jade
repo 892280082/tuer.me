@@ -17,9 +17,25 @@ html
     link(rel='stylesheet', href='http://#{config.csshost}/??bootstrap/css/bootstrap.min.css,bootstrap/css/todc-bootstrap.min.css,style/css/common.min.css,fancybox/jquery.fancybox.css?v=201304021030')
     if(session.template == 'profile' || session.template == 'myprofile')
       link(rel="alternate",type="application/rss+xml",href="http://#{config.host}/user/rss/#{rss.address}",title="#{rss.title}")
-    script(data-path="http://js.tuer.me/libs/",src='http://#{config.jshost}/??lithe/lithe-min.js,jquery/jquery-1.7.2.min.js,bootstrap/js/bootstrap.min.js,fancybox/jquery.fancybox.js')
+    script(data-path="http://js.tuer.me/libs/",src='http://#{config.jshost}/??lithe/lithe-min.js,jquery/jquery-1.7.2.min.js,bootstrap/js/bootstrap.min.js,fancybox/jquery.fancybox.js,jquery-emoji/jquery.emoji.js,emojisrc/emoji.js')
     script.
       lithe.use('mods/common.min.js?v=20121022');
+    style.
+      .Diary-content img.emoji{
+        width:20px;
+        float:none;
+        margin:0px;
+        height:20px;
+        border:none;
+      }
+    script.
+     $(function(){
+     if(!(/diary\/write|diary\/edit/).test(location.href)){
+     $('img[src="http://img.tuer.me/sound.png"]').each(function(){
+      $(this).replaceWith('<audio src="'+$(this).attr('data-url')+'" preload="auto" controls/>');
+     });
+     }
+     });
   body(data-spy="scroll",data-target=".bs-docs-sidebar")
     include topbar
     block content

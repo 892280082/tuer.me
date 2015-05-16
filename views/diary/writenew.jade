@@ -174,7 +174,7 @@ block content
       if(localStorage){
         var initContent = localStorage.getItem('editorContent');
         if(initContent){
-           editorContent.html(editor.val() || initContent);
+           editorContent.html(initContent);
         }
         editorContent.bind('keyup focus blur',function(){
           saveLocal();

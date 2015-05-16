@@ -123,7 +123,9 @@ var list = function(req, res) {
       item.avatarUrl = Avatar.getUrl(item.avatar);
       var img = util.getImgs(item.content)[0];
       item.img = img ? img+'?w=150&h=150' : item.img;
-      item.content = xss(item.content,{whiteList:{},stripIgnoreTag:true});
+      item.wav = util.getWavs(item.content)[0];
+      item.content = xss(item.content,{whiteList:{
+      },stripIgnoreTag:true});
       item.content = item.content.length > 150 ? item.content.slice(0, 150) + '...': item.content;
     });
 
@@ -193,8 +195,10 @@ var followedDiaries = function(req, res) {
       item.img = util.getpics(150, 1, item.filelist);
       var img = util.getImgs(item.content)[0];
       item.img = img ? img+'?w=150&h=150' : item.img;
+      item.wav = util.getWavs(item.content)[0];
       item.avatarUrl = Avatar.getUrl(item.avatar);
-      item.content = xss(item.content,{whiteList:{},stripIgnoreTag:true});
+      item.content = xss(item.content,{whiteList:{
+	},stripIgnoreTag:true});
       item.content = item.content.length > 150 ? item.content.slice(0, 150) + '...': item.content;
     });
 
@@ -346,6 +350,59 @@ var write = function(req, res) {
     }
   });
 };
+var writenew = function(req, res) {
+
+  if (!req.session.is_login) {
+    res.redirect('login');
+    return;
+  }
+
+  var uid = req.session.userdata._id,
+  proxy = new EventProxy(),
+  render = function(user, books) {
+    var date = new Date();
+    //生成页面当前token,有效期1小时
+
+    req.session.title = '写日记';
+    req.session.template = 'write';
+    req.session.error = req.flash('error');
+
+    res.render('diary/writenew', {
+      config: config,
+      session: req.session,
+      action: '/diary/save',
+      user: user,
+      books: books,
+      mood: config.mood,
+      weather: config.weather,
+      diary: {}
+    });
+
+  };
+
+  proxy.assign('user', 'books', render);
+  tuerBase.findUser(uid, function(err, user) {
+    if (err) {
+            console.log(err);
+      res.redirect('500');
+    } else {
+      proxy.trigger('user', user);
+      tuerBase.findBy({
+        owner: {
+          '$in': [uid.toString(), - 1]
+        }
+      },
+      'notebooks', user.notebook + 1, function(err, books) {
+        if (err) {
+                    console.log(err);
+          res.redirect('500');
+        } else {
+          proxy.trigger('books', books);
+        }
+      });
+    }
+  });
+};
 
 var save = function(req, res) {
   if (!req.session.is_login) {
@@ -382,7 +439,7 @@ var save = function(req, res) {
     content = xss(content,{whiteList:{
       p:[], 
       a:['href','target'],
-      img:['src'],
+      img:['src','data-url','data-type','width','height'],
       b:[],
       i:[],
       u:[],
@@ -391,6 +448,7 @@ var save = function(req, res) {
       pre:[],
       hr:[]
     },stripIgnoreTag:true});
+    console.log(content);
     var savedata = {
       content: content,
       notebook: bookid,
@@ -432,7 +490,7 @@ var save = function(req, res) {
                                     id:data[0]['_id'].toString()
                                 },function(err){
                                     if(err) throw err;
-                    res.redirect('home');
+                                    res.end('<script>if(localStorage){localStorage.removeItem("editorContent");} location.href="http://www.tuer.me"</script>');
                                 });
               }
             });
@@ -617,7 +675,7 @@ var update = function(req, res) {
     content = xss(content,{whiteList:{
       p:[], 
       a:['href','target'],
-      img:['src'],
+      img:['src','data-url','data-type','width','height'],
       b:[],
       i:[],
       u:[],
@@ -784,6 +842,7 @@ var remove = function(req, res) {
 exports.detail = detail;
 exports.list = list;
 exports.write = write;
+exports.writenew = writenew;
 exports.save = save;
 exports.edit = edit;
 exports.update = update;

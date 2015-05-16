@@ -100,6 +100,7 @@ module.exports = function(app) {
 	app.get('/diaries/:page?', diary.list);
 	app.get('/diary/:id', diary.detail);
 	app.get('/diary/write', diary.write);
+	app.get('/diary/writenew', diary.writenew);
 	app.get('/getqiniutoken', diary.getqiniutoken);
 	app.get('/qiniucallback', diary.qiniucallback);
 	app.get('/diary/edit/:id', diary.edit);
@@ -164,6 +165,7 @@ module.exports = function(app) {
 	app.post('/images/upload', images.upload);
     	app.post('/say/save',say.save);
     	app.post('/say/remove',say.remove);
+    	app.post('/say/wav',say.wav);
 	app.get('/sync/index', sync.index);
 	app.get('/sync/qrcode', sync.qrcode);
 	app.post('/sync/upload', sync.upload);

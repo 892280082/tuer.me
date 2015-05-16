@@ -1,3 +1,4 @@
+require('oneapm');
 var tuer = require('./app');
 /*
 Log = require('log'),

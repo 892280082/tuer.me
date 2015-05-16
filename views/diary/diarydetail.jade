@@ -1,5 +1,6 @@
 extends ../common/layout
 block content
+  link(href='/At.js/dist/css/jquery.atwho.css',rel="stylesheet")
   style.
     .Diary-content img{
       border:#ccc solid 1px;
@@ -52,26 +53,6 @@ block content
              div(class='share-bar')
                a(href="javascript:void(function(){var d=document,e=encodeURIComponent,s1=window.getSelection,s2=d.getSelection,s3=d.selection,s=s1?s1():s2?s2():s3?s3.createRange().text:'',r='http://www.douban.com/recommend/?url='+e(d.location.href)+'&title='+e(d.title)+'&sel='+e(s)+'&v=1',x=function(){if(!window.open(r,'douban','toolbar=0,resizable=1,scrollbars=yes,status=1,width=450,height=330'))location.href=r+'&r=1'};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})()") 
                   img(src='http://img2.douban.com/pics/fw2douban1.png',alt='推荐到豆瓣')
-               script.
-                   (function(){
-                    var _w = 86 , _h = 16;
-                    var param = {
-                      url:location.href,
-                      type:'6',
-                      count:'', /**是否显示分享数，1显示(可选)*/
-                      appkey:'1719894406', /**您申请的应用appkey,显示分享来源(可选)*/
-                      title:'', /**分享的文字内容(可选，默认为所在页面的title)*/
-                      pic:'', /**分享图片的路径(可选)*/
-                      ralateUid:'', /**关联用户的UID，分享微博会@该用户(可选)*/
-                      language:'zh_cn', /**设置语言，zh_cn|zh_tw(可选)*/
-                      rnd:new Date().valueOf()
-                    }
-                    var temp = [];
-                    for( var p in param ){
-                      temp.push(p + '=' + encodeURIComponent( param[p] || '' ) )
-                    }
-                    document.write('<iframe allowTransparency="true" frameborder="0" scrolling="no" src="http://hits.sinajs.cn/A1/weiboshare.html?' + temp.join('&') + '" width="'+ _w+'" height="'+_h+'"></iframe>')
-                   })()
              div(class='bar') #{diary.created_at} #{diary.created_user} #{diary.commentcount}回应  
                if(isSelf || (session.is_login && session.userdata.isadmin))
                  form(action='/diary/remove',method='post') 
@@ -134,9 +115,10 @@ block content
       div(class="modal hide fade",id="myPic",role="dialog",tabindex="-1",aria-labelledby="myPicLabel",aria-hidden="true")
         div(class="modal-body")
           img(src="#{diary.bigimg}")
-  script.
-    lithe.use('mods/diarydetail.min.js');
-    $('.Diary-content img').each(function(){
+    script(src='/Caret.js/dist/jquery.caret.js')
+    script(src='/At.js/dist/js/jquery.atwho.js')
+    script.
+      $('.Diary-content img').not('.emoji').each(function(){
         if(!$(this).closest('p').length) $(this).wrap('<p>');
         else{
           $(this).closest('p').after(this);  
@@ -144,7 +126,22 @@ block content
         }
         var bigimg = $(this).attr('src').replace(/\?.*$/,'') + '?w=-&h=-';
         $(this).wrap('<a class="fancybox" rel="group" href="'+bigimg+'">');
-     });
-     $('a.fancybox').fancybox({
+       });
+       $('a.fancybox').fancybox({
         fitToView:false  
-     });
+       });
+       var emojis = $.map(window.emojikeys.split('|'),function(value,i){return {key:value,name:value}});
+       emojis[0] = {key:'\+1',name:'+1'};
+       var atconfig = {
+         at:"\:",
+         data:emojis,
+         displayTpl:"<li>${name} <img src='http://img.tuer.me/jquery-emoji/images/emojis/${key}.png'  height='20' width='20' /></li>",
+         delay:400,
+         insertTpl:':${key}:',
+       };
+       setTimeout(function(){
+       var comment = $('#J_comment_textarea').atwho(atconfig);
+       comment.caret('pos',47);
+       comment.atwho('run');
+       },1000)
+       lithe.use('mods/diarydetail.js');
