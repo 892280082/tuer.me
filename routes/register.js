@@ -27,6 +27,7 @@ var invite = function(req, res) {
     nick = req.body.nick.trim(),
     proxy = new EventProxy(),
     render = function(findEmail, sendMail) {
+	console.log('render');
       var message = '发信失败了，联系下管理员小爝吧...';
       if (findEmail === 1 && sendMail) {
         message = '我们已经给您的' + email + '邮箱寄了一封激活信，它的有效期为3小时，如果收件箱中没有收到，麻烦您检查您的垃圾邮件夹~，也许会有惊喜...';
@@ -46,6 +47,7 @@ var invite = function(req, res) {
     try {
       var activateURL = 'http://www.tuer.me/register/active/' + encodeURIComponent(base64.encode('accounts=' + encodeURIComponent(email) + '&timestamp=' + new Date().getTime() + '&nick=' + encodeURIComponent(nick)));
     } catch(e) {
+	console.log('cache e');
       console.log(e);
       proxy.trigger('findEmail', 0);
       proxy.trigger('sendMail', 0);
@@ -56,6 +58,7 @@ var invite = function(req, res) {
       accounts: email
     },
     'users', function(err, data) {
+	console.log('find usered');
       if (err) {
         proxy.trigger('findEmail', 0);
         proxy.trigger('sendMail', 0);
@@ -63,12 +66,14 @@ var invite = function(req, res) {
         proxy.trigger('findEmail', 2);
         proxy.trigger('sendMail', 0);
       } else {
+	console.log('send mail before');
         mail.send_mail({
           to: email,
           subject: nick + '欢迎您注册兔耳！',
           html: '<p><b>Hi,' + nick + '! </b>欢迎注册兔耳网。</p><p>可以点击或者复制下面的连接来激活你的帐号。</p><p><a href="' + activateURL + '" target="_blank">' + activateURL + '</a></p>'
         },
         function(err, status) {
+	console.log('send mail after');
           proxy.trigger('findEmail', 1);
           proxy.trigger('sendMail', 1);
         });
